@@ -1,3 +1,28 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+
+/* Target the specific container */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px; /* Ultra thin */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Makes it look floating */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2); /* Faint Indigo */
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5); /* Glows on hover */
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
+}

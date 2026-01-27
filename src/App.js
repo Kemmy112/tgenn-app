@@ -10,6 +10,7 @@ import Onboarding from './pages/onboardingpage';
 import Dashboard from './pages/dashboard';
 import Performance from './pages/performance';
 import AcademicLoad from './pages/academicload';
+import ProfileModal from './components/profilemodal';
 import ForgotPassword from './pages/forgotpswd';
 import ResetPassword from './pages/resetpswd';
 import VerifyEmail from './auth/verifyemail';
@@ -22,6 +23,7 @@ function App() {
       <Route path = "/signup" element = {<Signup/>}/>
       <Route path = "/signin" element = {<Signin/>}/>
       <Route path = "/onboardingpage" element = {<Onboarding/>}/>
+      <Route path = "/profilemodal" element = {<ProfileModal/>}/>
       <Route element = {<Layout />}>
       <Route path = "/dashboard" element = {<Dashboard/>}/>
       <Route path = "/academicload" element = {<AcademicLoad/>}/>

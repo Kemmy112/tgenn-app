@@ -1,13 +1,52 @@
 import React, { useState } from "react";
 import { motion } from 'framer-motion';
-import { HiOutlineMail, HiOutlineUser } from 'react-icons/hi';
+import { HiOutlineMail } from 'react-icons/hi';
 import { RiLockPasswordLine } from 'react-icons/ri';
-import { FaCheck } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, ArrowLeft } from 'lucide-react';
+import { supabase } from '../supabase'; // Import your Supabase client
 
 export default function Signin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleSignin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert(error.message); // Or use a better error UI
+    } else {
+      // Success: Supabase will trigger onAuthStateChange in Layout, which handles the redirect
+      navigate("/dashboard"); // Optional: Explicitly navigate, but Layout will manage it
+    }
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+  if (!email) {
+    alert("Please enter your email address first.");
+    return;
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    // Even with wildcards, explicitly naming the route is safer
+    redirectTo: `${window.location.origin}/resetpswd`,
+  });
+
+  if (error) {
+    alert("Neural Link Error: " + error.message);
+  } else {
+    alert("Check your inbox. The recalibration link has been dispatched.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#08080a] text-white flex items-center justify-center p-6 relative">
@@ -18,12 +57,19 @@ export default function Signin() {
             <p className="text-slate-400 text-lg">Access your TGEN optimized schedule.</p>
           </div>
 
-          <div className="space-y-8">
+          <form onSubmit={handleSignin} className="space-y-8">
             <div className="space-y-3">
               <label className="text-sm font-bold uppercase tracking-widest text-slate-500 ml-2">Email Address</label>
               <div className="group relative">
                 <HiOutlineMail className="absolute left-5 top-5 text-2xl text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                <input type="email" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" placeholder="name@university.edu" />
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" 
+                  placeholder="name@university.edu" 
+                  required
+                />
               </div>
             </div>
 
@@ -31,19 +77,31 @@ export default function Signin() {
               <label className="text-sm font-bold uppercase tracking-widest text-slate-500 ml-2">Password</label>
               <div className="group relative">
                 <RiLockPasswordLine className="absolute left-5 top-5 text-2xl text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                <input type="password" className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" placeholder="••••••••" />
+                <input 
+                  type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" 
+                  placeholder="••••••••" 
+                  required
+                />
               </div>
             </div>
 
             <button 
-            onClick={() => navigate("/dashboard")}
-            className="w-full flex items-center justify-center gap-3 py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xl font-bold transition-all shadow-xl shadow-indigo-600/20"
+              type="submit" 
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-2xl text-xl font-bold transition-all shadow-xl shadow-indigo-600/20"
             >
-              Access Terminal
+              {loading ? "Syncing..." : "Access Terminal"}
             </button>
-            </div>
+          </form>
 
-          <p className="text-center mt-12 text-slate-500  text-lg">
+          <div className="mt-8 text-center">
+            <Link to="/resetpswd" className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-8">Forgot Password?</Link>
+          </div>
+
+          <p className="text-center mt-6 text-slate-500 text-lg">
             New node? <Link to="/signup" className="text-indigo-400 font-bold ml-2 underline underline-offset-8">Request Access</Link>
           </p>
         </div>
