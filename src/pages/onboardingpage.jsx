@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { 
-  Zap, User, BookOpen, Target, Settings2, 
-  ChevronRight, ChevronLeft, Check, Plus, Trash2, Camera, Loader2 
+  Zap, User, BookOpen, Target, 
+  ChevronRight, Check, Plus, Trash2, Camera, Loader2 
 } from 'lucide-react';
 
 export default function Onboarding() {

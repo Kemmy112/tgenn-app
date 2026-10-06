@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { 
-  Calendar, RefreshCcw, Sparkles, Plus, 
-  Bell, Zap, Loader2, Flame, AlertTriangle,
-  Brain, X, MessageSquare, Save
+  Calendar, RefreshCcw, Plus, 
+  Bell, Zap, Flame,
+  Brain, X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
