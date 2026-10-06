@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { supabase } from '../supabase';
-import { 
-  Calendar, RefreshCcw, Plus, 
+import {
+  Calendar, RefreshCcw, Plus,
   Bell, Zap, Flame,
   Brain, X,
 } from 'lucide-react';
@@ -11,12 +11,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function Dashboard() {
   const { profile, setProfile } = useOutletContext();
   const [isGenerating, setIsGenerating] = useState(false);
-  
+
   // Input States
   const [homework, setHomework] = useState("");
   const [targetCourse, setTargetCourse] = useState("");
   const [dueDate, setDueDate] = useState("");
-  
+
   // Modal & Bot States
   const [isCalibOpen, setIsCalibOpen] = useState(false);
   const [calibSelections, setCalibSelections] = useState({});
@@ -63,7 +63,7 @@ export default function Dashboard() {
     fetchDeadlines();
   }, [profile?.id]);
 
-  // CORE ENGINE - CLEANED & DYNAMIC
+  // CORE ENGINE
   const generateTimetable = async () => {
     if (!profile?.academic_data?.length) return;
     setIsGenerating(true);
@@ -80,8 +80,8 @@ export default function Dashboard() {
     const sorted = [...profile.academic_data].map(course => {
       const logs = frictionData?.filter(f => f.course_code === course.code) || [];
       // Use numeric values (1, 5, 9) directly
-      const avgFriction = logs.length > 0 
-        ? logs.reduce((sum, f) => sum + Number(f.friction_level || 5), 0) / logs.length 
+      const avgFriction = logs.length > 0
+        ? logs.reduce((sum, f) => sum + Number(f.friction_level || 5), 0) / logs.length
         : (Number(course.difficulty) === 2 ? 7 : 3);
 
       let weight = (Number(course.difficulty) === 2 ? 8 : 4) + avgFriction;
@@ -131,7 +131,7 @@ export default function Dashboard() {
     const logs = Object.entries(calibSelections).map(([code, level]) => ({
       user_id: profile.id,
       course_code: code,
-      friction_level: Number(level) 
+      friction_level: Number(level)
     }));
 
     const { error } = await supabase.from('friction_logs').insert(logs);
@@ -157,11 +157,11 @@ export default function Dashboard() {
 
   return (
     <div className="p-4 md:p-8 lg:p-14 max-w-[1600px] mx-auto min-h-screen relative overflow-x-hidden">
-      
-      {/* 5. THE RECALIBRATION MODAL */}
+
+      {/* RECALIBRATION MODAL */}
       <AnimatePresence>
         {isCalibOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-6"
           >
@@ -169,17 +169,17 @@ export default function Dashboard() {
               <button onClick={() => setIsCalibOpen(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white"><X /></button>
               <h2 className="text-2xl md:text-3xl font-black italic uppercase text-white mb-2">Neural Recalibration</h2>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-6 md:mb-10">Sync academic friction levels</p>
-              
+
               <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                 {profile?.academic_data?.map(course => (
                   <div key={course.code} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 gap-4">
                     <span className="font-bold text-white text-sm">{course.code}</span>
                     <div className="flex gap-2">
                       {[ { label: 'Low', val: 1 }, { label: 'Mid', val: 5 }, { label: 'High', val: 9 } ].map((opt) => (
-                        <button 
+                        <button
                           key={opt.val}
                           onClick={() => setCalibSelections(prev => ({ ...prev, [course.code]: opt.val }))}
-                          className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all 
+                          className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all
                             ${calibSelections[course.code] === opt.val ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-500'}`}
                         >
                           {opt.label}
@@ -198,7 +198,7 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* 6. TGEN GHOST BOT */}
+      {/* TGEN GHOST BOT */}
       <AnimatePresence>
         {showBot && (
           <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
@@ -224,12 +224,12 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
-              Mission Control // {profile?.reg_no || 'NODE_ACTIVE'}
+              Mission Control {"//"} {profile?.reg_no || 'NODE_ACTIVE'}
             </span>
             <div className="hidden md:block h-[1px] w-12 bg-white/10"></div>
             <div className="flex items-center gap-2 text-amber-500">
-               <Flame size={14} fill="currentColor"/>
-               <span className="text-[10px] font-black uppercase">{streak} Day Streak</span>
+              <Flame size={14} fill="currentColor"/>
+              <span className="text-[10px] font-black uppercase">{streak} Day Streak</span>
             </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-black italic uppercase text-white tracking-tighter leading-none">
@@ -272,16 +272,16 @@ export default function Dashboard() {
 
           {/* TASK LOGGING */}
           <section className="bg-white/[0.03] border border-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] max-w-xl">
-             <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2"><Plus size={16} /> Log Task</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-               <select value={targetCourse} onChange={(e) => setTargetCourse(e.target.value)} className="bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-bold text-white outline-none">
-                 <option value="">Course...</option>
-                 {profile?.academic_data?.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
-               </select>
-               <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-bold text-white outline-none" />
-             </div>
-             <textarea value={homework} onChange={(e) => setHomework(e.target.value)} placeholder="What needs to be done?" className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-xs text-slate-300 min-h-[80px] mb-4 outline-none" />
-             <button onClick={handleAddHomework} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 md:py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Add to Feed</button>
+            <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2"><Plus size={16} /> Log Task</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <select value={targetCourse} onChange={(e) => setTargetCourse(e.target.value)} className="bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-bold text-white outline-none">
+                <option value="">Course...</option>
+                {profile?.academic_data?.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+              </select>
+              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-bold text-white outline-none" />
+            </div>
+            <textarea value={homework} onChange={(e) => setHomework(e.target.value)} placeholder="What needs to be done?" className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-xs text-slate-300 min-h-[80px] mb-4 outline-none" />
+            <button onClick={handleAddHomework} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 md:py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Add to Feed</button>
           </section>
         </div>
 

@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { HiOutlineMail } from 'react-icons/hi';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, ArrowLeft } from 'lucide-react';
-import { supabase } from '../supabase'; // Import your Supabase client
+import { supabase } from '../supabase';
 
 export default function Signin() {
   const [email, setEmail] = useState("");
@@ -16,37 +15,18 @@ export default function Signin() {
     e.preventDefault();
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
     if (error) {
-      alert(error.message); // Or use a better error UI
+      alert(error.message);
     } else {
-      // Success: Supabase will trigger onAuthStateChange in Layout, which handles the redirect
-      navigate("/dashboard"); // Optional: Explicitly navigate, but Layout will manage it
+      navigate("/dashboard");
     }
     setLoading(false);
   };
-
-  const handleForgotPassword = async () => {
-  if (!email) {
-    alert("Please enter your email address first.");
-    return;
-  }
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    // Even with wildcards, explicitly naming the route is safer
-    redirectTo: `${window.location.origin}/resetpswd`,
-  });
-
-  if (error) {
-    alert("Neural Link Error: " + error.message);
-  } else {
-    alert("Check your inbox. The recalibration link has been dispatched.");
-  }
-};
 
   return (
     <div className="min-h-screen bg-[#08080a] text-white flex items-center justify-center p-6 relative">
@@ -62,12 +42,12 @@ export default function Signin() {
               <label className="text-sm font-bold uppercase tracking-widest text-slate-500 ml-2">Email Address</label>
               <div className="group relative">
                 <HiOutlineMail className="absolute left-5 top-5 text-2xl text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" 
-                  placeholder="name@university.edu" 
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all"
+                  placeholder="name@university.edu"
                   required
                 />
               </div>
@@ -77,19 +57,19 @@ export default function Signin() {
               <label className="text-sm font-bold uppercase tracking-widest text-slate-500 ml-2">Password</label>
               <div className="group relative">
                 <RiLockPasswordLine className="absolute left-5 top-5 text-2xl text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all" 
-                  placeholder="••••••••" 
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-xl outline-none focus:border-indigo-500/50 transition-all"
+                  placeholder="••••••••"
                   required
                 />
               </div>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="w-full flex items-center justify-center gap-3 py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-2xl text-xl font-bold transition-all shadow-xl shadow-indigo-600/20"
             >

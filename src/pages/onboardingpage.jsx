@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
-import { 
-  Zap, User, BookOpen, Target, 
-  ChevronRight, Check, Plus, Trash2, Camera, Loader2 
+import {
+  Zap, User, BookOpen, Target,
+  ChevronRight, Check, Plus, Trash2, Camera, Loader2
 } from 'lucide-react';
 
 export default function Onboarding() {
@@ -15,7 +15,7 @@ export default function Onboarding() {
 
   // --- 1. STATE INITIALIZATION (Aligned with Dashboard) ---
   const [studentInfo, setStudentInfo] = useState({
-    regNo: '',
+    regnumber: '',
     courseOfStudy: '',
     level: '',
     semester: '1st',
@@ -75,13 +75,13 @@ export default function Onboarding() {
     const { error } = await supabase
       .from('profiles')
       .update({
-        reg_no: studentInfo.regNo,
+        regnumber: studentInfo.regnumber,
         course_of_study: studentInfo.courseOfStudy,
         level_of_study: studentInfo.level,
         semester: studentInfo.semester,
         avatar_url: studentInfo.avatarUrl,
         academic_data: courses,
-        study_preferences: preferences, // plural column name check
+        study_preferences: preferences,
         onboarding_completed: isFinal,
         updated_at: new Date()
       })
@@ -97,19 +97,19 @@ export default function Onboarding() {
 
   const handleNext = async () => {
     if (step === 1) {
-    if (!studentInfo.regNo.trim()) {
-      alert("IDENTITY ERROR: Registration Number is required for Neural Link.");
-      return;
+      if (!studentInfo.regNo.trim()) {
+        alert("IDENTITY ERROR: Registration Number is required for Neural Link.");
+        return;
+      }
+      if (!studentInfo.courseOfStudy.trim()) {
+        alert("IDENTITY ERROR: Course of Study is required.");
+        return;
+      }
+      if (!studentInfo.level.trim()) {
+        alert("IDENTITY ERROR: Level is required for Neural Link.");
+        return;
+      }
     }
-    if (!studentInfo.courseOfStudy.trim()) {
-      alert("IDENTITY ERROR: Course of Study is required.");
-      return;
-    }
-    if (!studentInfo.level.trim()){
-      alert("IDENTITY ERROR: Level is required for Neural Link.");
-      return;
-    }
-  }
     const success = await saveProgress(step === 4);
     if (success) {
       if (step === 4) navigate('/dashboard');
@@ -120,7 +120,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-[#08080a] text-white flex flex-col items-center p-6 md:p-12 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px] pointer-events-none" />
-      
+
       <div className="w-full max-w-4xl z-10">
         <header className="text-center mb-10">
           <PhaseIndicator currentStep={step} />
@@ -152,7 +152,7 @@ function PhaseIndicator({ currentStep }) {
     <div className="flex items-center gap-3 mb-16 justify-center">
       {[1, 2, 3, 4].map((i) => (
         <React.Fragment key={i}>
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all duration-500 
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all duration-500
             ${currentStep >= i ? 'bg-indigo-600 border-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'border-white/10 text-slate-600'}`}>
             {currentStep > i ? <Check size={18} strokeWidth={3} /> : <span className="text-sm font-black">{i}</span>}
           </div>
@@ -193,368 +193,98 @@ function Phase1({ data, setData, onNext, loading, handleFileUpload }) {
 }
 
 function Phase2({ courses, setCourses, onNext, onPrev }) {
-
   const addCourse = () => setCourses([...courses, { id: Date.now(), code: '', title: '', units: '', difficulty: 1, friction: 1.0 }]);
 
   const updateCourse = (id, field, val) => setCourses(courses.map(c => c.id === id ? {...c, [field]: val} : c));
 
   const removeCourse = (id) => courses.length > 1 && setCourses(courses.filter(c => c.id !== id));
 
-
-
   // --- THE "NEURAL" SENSOR ---
-
   const autoDetectDifficulty = (id, title) => {
-
     if (!title) return;
-
     const hardKeywords = [
-
       'math', 'statistics', 'chem', 'bio', 'eng', 'quant', 'intelligence',
-
       'mechanic', 'data structure', 'algorithm',
-
       'organic', 'law', 'medicine', 'anatomy', 'advanced', 'complex', 'stochastic'
-
     ];
 
-   
-
     const isHard = hardKeywords.some(word => title.toLowerCase().includes(word));
-
     if (isHard) {
-
       updateCourse(id, 'difficulty', 2); // Auto-set to Hard
-
     }
-
   };
-
-
 
   const totalUnits = courses.reduce((acc, curr) => acc + (Number(curr.units) || 0), 0);
 
-
-
   return (
-
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white/[0.02] border border-white/10 p-8 rounded-[2.5rem]">
-
       <div className="flex justify-between items-center mb-8">
-
         <h2 className="text-2xl font-bold flex items-center gap-3"><BookOpen className="text-indigo-400" /> Academic Matrix</h2>
-
         <div className="px-4 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-
           <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Total Units: {totalUnits}</span>
-
         </div>
-
       </div>
-
-
 
       <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-
         {courses.map(c => (
-
           <div key={c.id} className="grid grid-cols-12 gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 items-center group">
-
             <div className="col-span-2">
-
               <input placeholder="Code" value={c.code} onChange={(e) => updateCourse(c.id, 'code', e.target.value)} className="w-full bg-transparent outline-none font-mono text-sm uppercase placeholder:text-slate-700" />
-
             </div>
-
-           
 
             <div className="col-span-5">
-
               <input
-
                 placeholder="Course Title"
-
                 value={c.title.toUpperCase()}
-
                 onChange={(e) => updateCourse(c.id, 'title', e.target.value)}
-
-                onBlur={(e) => autoDetectDifficulty(c.id, e.target.value)} // Trigger scan when user finishes typing
-
+                onBlur={(e) => autoDetectDifficulty(c.id, e.target.value)}
                 className="w-full bg-transparent outline-none text-sm placeholder:text-slate-700"
-
               />
-
             </div>
 
-
-
             <div className="col-span-2">
-
               <input
-
                 type="number"
-
                 placeholder="Units"
-
                 value={c.units}
-
                 onChange={(e) => updateCourse(c.id, 'units', e.target.value)}
-
                 className="w-full bg-transparent outline-none text-sm font-bold text-indigo-400 placeholder:text-slate-700"
-
               />
-
             </div>
-
-
 
             <div className="col-span-2">
-
               <button
-
                 onClick={() => updateCourse(c.id, 'difficulty', c.difficulty === 1 ? 2 : 1)}
-
                 className={`w-full py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border transition-all ${
-
                   c.difficulty === 1
-
                   ? 'text-emerald-400 border-emerald-400/20 hover:bg-emerald-400/10'
-
                   : 'text-rose-400 border-rose-400/20 bg-rose-400/5 shadow-[0_0_10px_rgba(244,63,94,0.1)]'
-
                 }`}
-
               >
-
                 {c.difficulty === 1 ? '⚡ Easy' : '🔥 Hard'}
-
               </button>
-
             </div>
-
-
 
             <div className="col-span-1 flex justify-end">
-
               <button onClick={() => removeCourse(c.id)} className="text-slate-600 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100">
-
                 <Trash2 size={14} />
-
               </button>
-
             </div>
-
           </div>
-
         ))}
-
       </div>
-
-
 
       <button onClick={addCourse} className="w-full mt-4 py-3 border border-dashed border-white/10 rounded-xl text-slate-500 hover:text-white hover:border-indigo-500/50 transition-all flex items-center justify-center gap-2 text-sm">
-
         <Plus size={16} /> Add New Entry
-
       </button>
 
-
-
       <div className="mt-10 flex justify-between">
-
         <button onClick={onPrev} className="text-slate-500 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors">Back</button>
-
         <button onClick={onNext} className="bg-indigo-600 px-10 py-3 rounded-xl font-bold shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform">Next Phase</button>
-
       </div>
-
     </motion.div>
-
   );
-
 }
-
-// function Phase2({ courses, setCourses, onNext, onPrev }) {
-
-//   const addCourse = () => setCourses([...courses, { id: Date.now(), code: '', title: '', units: '', difficulty: 1, friction: 1.0 }]);
-
-//   const updateCourse = (id, field, val) => setCourses(courses.map(c => c.id === id ? {...c, [field]: val} : c));
-
-//   const removeCourse = (id) => courses.length > 1 && setCourses(courses.filter(c => c.id !== id));
-
-
-
-//   // --- THE "NEURAL" SENSOR ---
-
-//   const autoDetectDifficulty = (id, title) => {
-
-//     if (!title) return;
-
-//     const hardKeywords = [
-
-//       'math', 'physic', 'chem', 'bio', 'eng', 'quant', 'thermo',
-
-//       'mechanic', 'calculus', 'circuit', 'data structure', 'algorithm',
-
-//       'organic', 'law', 'medicine', 'anatomy', 'advanced', 'complex', 'stochastic'
-
-//     ];
-
-   
-
-//     const isHard = hardKeywords.some(word => title.toLowerCase().includes(word));
-
-//     if (isHard) {
-
-//       updateCourse(id, 'difficulty', 2); // Auto-set to Hard
-
-//     }
-
-//   };
-
-
-
-//   const totalUnits = courses.reduce((acc, curr) => acc + (Number(curr.units) || 0), 0);
-
-
-
-//   return (
-
-//     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white/[0.02] border border-white/10 p-8 rounded-[2.5rem]">
-
-//       <div className="flex justify-between items-center mb-8">
-
-//         <h2 className="text-2xl font-bold flex items-center gap-3"><BookOpen className="text-indigo-400" /> Academic Matrix</h2>
-
-//         <div className="px-4 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-
-//           <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Total Units: {totalUnits}</span>
-
-//         </div>
-
-//       </div>
-
-
-
-//       <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-
-//         {courses.map(c => (
-
-//           <div key={c.id} className="grid grid-cols-12 gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 items-center group">
-
-//             <div className="col-span-2">
-
-//               <input placeholder="Code" value={c.code} onChange={(e) => updateCourse(c.id, 'code', e.target.value)} className="w-full bg-transparent outline-none font-mono text-sm uppercase placeholder:text-slate-700" />
-
-//             </div>
-
-           
-
-//             <div className="col-span-5">
-
-//               <input
-
-//                 placeholder="Course Title"
-
-//                 value={c.title}
-
-//                 onChange={(e) => updateCourse(c.id, 'title', e.target.value)}
-
-//                 onBlur={(e) => autoDetectDifficulty(c.id, e.target.value)} // Trigger scan when user finishes typing
-
-//                 className="w-full bg-transparent outline-none text-sm placeholder:text-slate-700"
-
-//               />
-
-//             </div>
-
-
-
-//             <div className="col-span-2">
-
-//               <input
-
-//                 type="number"
-
-//                 placeholder="Units"
-
-//                 value={c.units}
-
-//                 onChange={(e) => updateCourse(c.id, 'units', e.target.value)}
-
-//                 className="w-full bg-transparent outline-none text-sm font-bold text-indigo-400 placeholder:text-slate-700"
-
-//               />
-
-//             </div>
-
-
-
-//             <div className="col-span-2">
-
-//               <button
-
-//                 onClick={() => updateCourse(c.id, 'difficulty', c.difficulty === 1 ? 2 : 1)}
-
-//                 className={`w-full py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border transition-all ${
-
-//                   c.difficulty === 1
-
-//                   ? 'text-emerald-400 border-emerald-400/20 hover:bg-emerald-400/10'
-
-//                   : 'text-rose-400 border-rose-400/20 bg-rose-400/5 shadow-[0_0_10px_rgba(244,63,94,0.1)]'
-
-//                 }`}
-
-//               >
-
-//                 {c.difficulty === 1 ? '⚡ Easy' : '🔥 Hard'}
-
-//               </button>
-
-//             </div>
-
-
-
-//             <div className="col-span-1 flex justify-end">
-
-//               <button onClick={() => removeCourse(c.id)} className="text-slate-600 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100">
-
-//                 <Trash2 size={14} />
-
-//               </button>
-
-//             </div>
-
-//           </div>
-
-//         ))}
-
-//       </div>
-
-
-
-//       <button onClick={addCourse} className="w-full mt-4 py-3 border border-dashed border-white/10 rounded-xl text-slate-500 hover:text-white hover:border-indigo-500/50 transition-all flex items-center justify-center gap-2 text-sm">
-
-//         <Plus size={16} /> Add New Entry
-
-//       </button>
-
-
-
-//       <div className="mt-10 flex justify-between">
-
-//         <button onClick={onPrev} className="text-slate-500 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors">Back</button>
-
-//         <button onClick={onNext} className="bg-indigo-600 px-10 py-3 rounded-xl font-bold shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform">Next Phase</button>
-
-//       </div>
-
-//     </motion.div>
-
-//   );
-
-// }
 
 function Phase3({ data, setData, onNext, onPrev }) {
   const periods = [
