@@ -261,7 +261,7 @@ export default function Dashboard() {
                   <h4 className="text-[10px] font-black text-indigo-400 uppercase mb-4 md:mb-6 tracking-[0.2em]">{day}</h4>
                   {timetable?.[day]?.map((s, i) => (
                     <div key={i} className={`mb-4 md:mb-6 last:mb-0 border-l-2 pl-3 ${s.isPriority ? 'border-indigo-500' : 'border-white/10'} ${s.insight.includes("🔥") ? 'animate-pulse' : ''}`}>
-                      <div className="text-[8px] md:text-[9px] font-mono text-slate-500 font-bold uppercase">{s?.timeSlot} // {s?.duration}m</div>
+                      <div className="text-[8px] md:text-[9px] font-mono text-slate-500 font-bold uppercase">{s?.timeSlot} {s?.duration}m</div>
                       <div className="text-xs md:text-sm font-black text-white truncate italic uppercase leading-tight">{s?.code}</div>
                     </div>
                   ))}
