@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -8,7 +8,6 @@ export default function VerifyEmail() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-  const inputRefs = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "your email";
@@ -34,7 +33,7 @@ export default function VerifyEmail() {
     setLoading(true);
     const finalOtp = otp.join("");
 
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       email,
       token: finalOtp,
       type: "signup",
@@ -55,19 +54,19 @@ export default function VerifyEmail() {
           <div className="w-16 h-16 bg-indigo-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/30">
             <ShieldCheck className="text-indigo-400 w-8 h-8" />
           </div>
-          
+
           <h1 className="text-3xl font-bold mb-2">Neural Key Sync</h1>
           <p className="text-slate-400 mb-8">Enter the 6-digit access code sent to <br/><span className="text-indigo-400">{email}</span></p>
 
           <form onSubmit={handleVerify} className="space-y-8">
             <div className="flex justify-between gap-2">
-              {otp.map((data, index) => (
+              {otp.map((digit, index) => (
                 <input
                   key={index}
                   type="text"
                   maxLength="1"
                   className="w-12 h-14 bg-white/[0.05] border border-white/10 rounded-xl text-center text-2xl font-bold outline-none focus:border-indigo-500 transition-all"
-                  value={data}
+                  value={digit}
                   onChange={(e) => handleChange(e.target, index)}
                   onFocus={(e) => e.target.select()}
                 />

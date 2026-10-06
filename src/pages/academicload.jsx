@@ -4,10 +4,10 @@ import { supabase } from '../supabase';
 import { Gauge, Zap, Clock, Brain, Flame, RefreshCcw } from 'lucide-react';
 
 export default function AcademicLoad() {
-  const { profile, setProfile } = useOutletContext();
+  const { profile } = useOutletContext();
   const [frictions, setFrictions] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const courses = profile?.academic_data || [];
+  const courses = useMemo(() => profile?.academic_data || [], [profile?.academic_data]);
 
   useEffect(() => {
     const fetchFriction = async () => {
@@ -63,7 +63,7 @@ export default function AcademicLoad() {
           <div className="relative w-48 h-48 md:w-72 md:h-72 mb-8">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 288 288">
               <circle cx="144" cy="144" r="130" stroke="currentColor" strokeWidth="18" fill="transparent" className="text-white/5" />
-              <circle cx="144" cy="144" r="130" stroke="currentColor" strokeWidth="18" fill="transparent" 
+              <circle cx="144" cy="144" r="130" stroke="currentColor" strokeWidth="18" fill="transparent"
                 strokeDasharray={816} strokeDashoffset={816 - (816 * stats.score) / 100}
                 className="text-indigo-500 transition-all duration-1000" />
             </svg>

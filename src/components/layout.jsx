@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabase';
 import { LayoutDashboard, BookOpen, TrendingUp, Zap, LogOut, Loader2 } from 'lucide-react';
 import throttle from 'lodash.throttle';
-import ProfileModal from '../components/profilemodal'; 
+import ProfileModal from '../components/profilemodal';
 
 export default function Layout() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Modal control state
   const navigate = useNavigate();
   const location = useLocation();
 
-  const syncNeuralLink = useCallback(throttle(async () => {
+  const syncNeuralLink = useMemo(() => throttle(async () => {
     if (loaded) return;
     try {
       setError(null);
@@ -47,7 +47,7 @@ export default function Layout() {
         setError('Profile not ready.');
         setLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError('Sync failed.');
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export default function Layout() {
 
   return (
     <div className="h-screen bg-[#08080a] text-white flex flex-col lg:flex-row overflow-hidden font-sans">
-      
+
       {/* SIDEBAR - Desktop */}
       <aside className="hidden lg:flex w-72 border-r border-white/5 p-8 flex-col shrink-0">
         <div className="flex items-center gap-3 px-2 mb-12">
@@ -96,7 +96,7 @@ export default function Layout() {
 
         <div className="mt-auto flex flex-col gap-4">
           {/* TRIGGER MODAL ON CLICK */}
-          <div 
+          <div
             onClick={() => setIsProfileOpen(true)}
             className="p-4 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-all"
           >
@@ -125,9 +125,9 @@ export default function Layout() {
         <MobileNavLink icon={<BookOpen size={20} />} to="/academicload" active={location.pathname === '/academicload'} />
         <MobileNavLink icon={<TrendingUp size={20} />} to="/performance" active={location.pathname === '/performance'} />
         <button onClick={() => setIsProfileOpen(true)} className="p-4 text-slate-500">
-           <div className="w-6 h-6 rounded-full border border-white/20 overflow-hidden">
-              {profile?.avatar_url && <img src={profile.avatar_url} className="w-full h-full object-cover" alt="pfp" />}
-           </div>
+          <div className="w-6 h-6 rounded-full border border-white/20 overflow-hidden">
+            {profile?.avatar_url && <img src={profile.avatar_url} className="w-full h-full object-cover" alt="pfp" />}
+          </div>
         </button>
       </nav>
 
@@ -148,9 +148,9 @@ export default function Layout() {
       </main>
 
       {/* THE MODAL */}
-      <ProfileModal 
-        isOpen={isProfileOpen} 
-        onClose={() => setIsProfileOpen(false)} 
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
         profile={profile}
         setProfile={setProfile}
       />
@@ -158,12 +158,12 @@ export default function Layout() {
   );
 }
 
-// --- HELPER COMPONENTS (Now explicitly defined) ---
+// --- HELPER COMPONENTS ---
 
 function SidebarLink({ icon, label, to, active }) {
   const navigate = useNavigate();
   return (
-    <button 
+    <button
       onClick={() => navigate(to)}
       className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all ${active ? 'bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)]' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
     >
@@ -175,7 +175,7 @@ function SidebarLink({ icon, label, to, active }) {
 function MobileNavLink({ icon, to, active }) {
   const navigate = useNavigate();
   return (
-    <button 
+    <button
       onClick={() => navigate(to)}
       className={`p-4 rounded-full transition-all ${active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500'}`}
     >
